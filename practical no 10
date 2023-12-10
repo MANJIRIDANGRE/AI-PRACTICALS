@@ -86,3 +86,9 @@ if __name__ == "__main__":
             puzzle.print_state(puzzle.transition(puzzle.initial_state, action))
     else:
         print("No solution found.")
+
+
+
+
+or
+
