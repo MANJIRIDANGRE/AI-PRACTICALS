@@ -1,0 +1,88 @@
+import heapq
+
+# Define the puzzle class
+class Puzzle:
+    def __init__(self, initial_state, goal_state):
+        self.initial_state = initial_state
+        self.goal_state = goal_state
+
+    def actions(self, state):
+        row, col = self.find_blank(state)
+        possible_actions = []
+        if row > 0:
+            possible_actions.append((row - 1, col))
+        if row < 2:
+            possible_actions.append((row + 1, col))
+        if col > 0:
+            possible_actions.append((row, col - 1))
+        if col < 2:
+            possible_actions.append((row, col + 1))
+        return possible_actions
+
+    def transition(self, state, action):
+        new_state = [list(row) for row in state]
+        blank_row, blank_col = self.find_blank(state)
+        new_row, new_col = action
+        new_state[blank_row][blank_col], new_state[new_row][new_col] = new_state[new_row][new_col], new_state[blank_row][blank_col]
+        return tuple(tuple(row) for row in new_state)
+
+    def find_blank(self, state):
+        for row, row_data in enumerate(state):
+            for col, value in enumerate(row_data):
+                if value == 0:
+                    return row, col
+
+    def h(self, state):
+        # Heuristic function (Manhattan distance)
+        distance = 0
+        for row in range(3):
+            for col in range(3):
+                value = state[row][col]
+                if value != 0:
+                    goal_row, goal_col = divmod(value - 1, 3)
+                    distance += abs(row - goal_row) + abs(col - goal_col)
+        return distance
+
+    def solve(self):
+        open_list = []
+        closed_set = set()
+        heapq.heappush(open_list, (self.h(self.initial_state), 0, self.initial_state, []))
+
+        while open_list:
+            _, cost, current_state, path = heapq.heappop(open_list)
+            if current_state == self.goal_state:
+                return path
+
+            if current_state in closed_set:
+                continue
+
+            closed_set.add(current_state)
+
+            for action in self.actions(current_state):
+                new_state = self.transition(current_state, action)
+                new_cost = cost + 1
+                new_path = path + [action]
+                heapq.heappush(open_list, (new_cost + self.h(new_state), new_cost, new_state, new_path))
+
+        return None
+
+    def print_state(self, state):
+        for row in state:
+            print(" ".join(map(str, row)))
+        print("\n")
+
+if __name__ == "__main__":
+    # Define the initial and goal states
+    initial_state = ((1, 2, 3), (0, 4, 6), (7, 5, 8))
+    goal_state = ((1, 2, 3), (4, 5, 6), (7, 8, 0))
+
+    puzzle = Puzzle(initial_state, goal_state)
+    solution = puzzle.solve()
+
+    if solution:
+        print("Solution found:")
+        for i, action in enumerate(solution):
+            print(f"Step {i + 1}: Move blank to {action}")
+            puzzle.print_state(puzzle.transition(puzzle.initial_state, action))
+    else:
+        print("No solution found.")
