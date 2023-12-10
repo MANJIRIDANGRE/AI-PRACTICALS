@@ -1,0 +1,36 @@
+class FuzzySet:
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+def union(A, B):
+    result = FuzzySet("Union", max(A.value, B.value))
+    return result
+
+def intersection(A, B):
+    result = FuzzySet("Intersection", min(A.value, B.value))
+    return result
+
+def complement(A):
+    result = FuzzySet("Complement", 1 - A.value)
+    return result
+
+# Example Usage
+if __name__ == "__main__":
+    # Define two fuzzy sets: A and B with single values
+    A = FuzzySet("A", 0.7)
+    B = FuzzySet("B", 0.4)
+
+    # Calculate Union of A and B
+    C = union(A, B)
+    
+    # Calculate Intersection of A and B
+    D = intersection(A, B)
+    
+    # Calculate Complement of A
+    E = complement(A)
+    
+    # Display the properties of the resulting fuzzy sets
+    print(f"{C.name}: Value={C.value}")
+    print(f"{D.name}: Value={D.value}")
+    print(f"{E.name}: Value={E.value}")
