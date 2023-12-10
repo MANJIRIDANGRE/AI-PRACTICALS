@@ -1,0 +1,30 @@
+from collections import defaultdict
+
+visited = defaultdict(lambda: False)
+
+def water_jug_problem(X, Y):
+    global J1, J2, L
+    
+    if (X == L and Y == 0) or (Y == L and X == 0):
+        print("(", X, ",", Y, ")", sep="")
+        return True
+    
+    if not visited[(X, Y)]:
+        print("(", X, ",", Y, ")", sep="")
+        visited[(X, Y)] = True
+
+        return (water_jug_problem(0, Y) or
+                water_jug_problem(X, 0) or
+                water_jug_problem(J1, Y) or
+                water_jug_problem(X, J2) or
+                water_jug_problem(X + min(Y, (J1 - X)), Y - min(Y, (J1 - X))) or
+                water_jug_problem(X - min(X, (J2 - Y)), Y + min(X, (J2 - Y))))
+
+    else:
+        return False
+
+J1 = 2
+J2 = 5
+L = 3
+print("Path is as follows:")
+water_jug_problem(0, 0)
